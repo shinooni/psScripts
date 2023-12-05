@@ -9,7 +9,7 @@ Easy Setup - change variables and go
 #Can add to extraFiles list with ,
 ############################################################
 #DEBUG switch
-$debugout = $true
+$debugout = $false
 $timeVar = Get-Date -Format HHmmssfff
 Start-Transcript -path "C:\Program Files (x86)\Win32Apps\dioutput.txt" -append
 write-host "version dev3"
@@ -152,18 +152,18 @@ foreach ($file in $extraFiles) {
 
 #Add to Startup Items - Modifying registry entry
 if($requireRunOnEveryLogon){
-		if($debugout){
-			write-host "Checking reg Does Not Exist - regDoesNotExist: $regDoesNotExist"
-			write-host "startup list $startupList"
-			write-host "name of program: $nameOfProgram"
-			write-host "regDoesNotExist: $regDoesNotExist"
-			write-host "altRegDoesNotExist: $altRegDoesNotExist"
-			write-host "anotherAltRegDoesNotExist: $anotherAltRegDoesNotExist"
-			Get-ItemProperty -Path "$startupList" -Name "$nameOfProgram"
-			Get-ItemProperty -Path "$altStartupList" -Name "$nameOfProgram"
-			Get-ItemProperty -Path "$anotherAltStartupList" -Name "$nameOfProgram"
-		
-		}
+	if($debugout){
+		write-host "Checking reg Does Not Exist - regDoesNotExist: $regDoesNotExist"
+		write-host "startup list $startupList"
+		write-host "name of program: $nameOfProgram"
+		write-host "regDoesNotExist: $regDoesNotExist"
+		write-host "altRegDoesNotExist: $altRegDoesNotExist"
+		write-host "anotherAltRegDoesNotExist: $anotherAltRegDoesNotExist"
+		Get-ItemProperty -Path "$startupList" -Name "$nameOfProgram"
+		Get-ItemProperty -Path "$altStartupList" -Name "$nameOfProgram"
+		Get-ItemProperty -Path "$anotherAltStartupList" -Name "$nameOfProgram"
+	
+	}
 	if($regDoesNotExist -and ($altRegDoesNotExist -and $anotherAltRegDoesNotExist)){
 		if($debugout){
 			write-host "About to write registry entry"
@@ -191,8 +191,14 @@ if($requireRunOnEveryLogon){
 		write-host "anotherAltRegDoesNotExist: $anotherAltRegDoesNotExist"
 		write-host "  "
 		write-host "=============="
+		write-host "Running Cleanup for old install locations"
 	}
-	
+	try {
+	Remove-Item -Path "C:\Win32Apps" -Recurse -Force -Confirm:$false
+	}
+	catch {
+		write-host "Old Install Locations previously cleaned or wasnt installed"
+	}
 	#dont need to write to any other places
 	#You may need to alter which startupList path/var you use in the future.
 	
