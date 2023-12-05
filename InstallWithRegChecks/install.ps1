@@ -22,6 +22,8 @@ $anotherAltStartupList = "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVe
 $nameOfProgram = "DesktopInfo64"
 $exeInstallPath = "C:\Program Files (x86)\Win32Apps\DesktopInfo"
 $exeFile = "DesktopInfo64.exe"
+$legacyPathClean = $true
+[String[]]$oldInstallPaths = "C:\Win32Apps"
 [String[]]$extraFiles = "DesktopInfo64W.exe", "desktopinfo.ini", "libeay32.dll",`
 						"ssleay32.dll", "GetCellularIP.ps1", "GetEthernetIP.ps1",`
 						"GetWifiIP.ps1"
@@ -191,18 +193,37 @@ if($requireRunOnEveryLogon){
 		write-host "anotherAltRegDoesNotExist: $anotherAltRegDoesNotExist"
 		write-host "  "
 		write-host "=============="
-		write-host "Running Cleanup for old install locations"
-	}
-	try {
-	Remove-Item -Path "C:\Win32Apps" -Recurse -Force -Confirm:$false
-	}
-	catch {
-		write-host "Old Install Locations previously cleaned or wasnt installed"
 	}
 	#dont need to write to any other places
 	#You may need to alter which startupList path/var you use in the future.
 	
-}	
+}
+if ($debugout){
+		write-host "Variable Checkpoint - Stage 3"
+		write-host "preJoinedValueData: $preJoinedValueData"
+		write-host "checkIfRegExists: $checkIfRegExists"
+		write-host "checkIfAltRegExists: $checkIfAltRegExists"
+		write-host "checkIfAnotherAltRegExists = $checkIfAnotherAltRegExists"
+		write-host "  "
+		write-host "regDoesNotExist: $regDoesNotExist"
+		write-host "altRegDoesNotExist: $altRegDoesNotExist"
+		write-host "anotherAltRegDoesNotExist: $anotherAltRegDoesNotExist"
+		write-host "  "
+		write-host "========================================="
+		write-host "Running Cleanup for old install locations"
+		write-host "========================================="
+		write-host "  "
+	}
+	if (legacyPathClean) {
+		foreach ($legacyPath in $oldInstallPaths) {
+			try {
+			Remove-Item -Path "$legacyPath" -Recurse -Force -Confirm:$false
+			}
+			catch {
+				write-host "$legacyPath Old Install Location previously cleaned or wasnt installed"
+			}
+		}
+	}
 #Create any Powershell scripts required for the program
 
 Stop-Transcript
