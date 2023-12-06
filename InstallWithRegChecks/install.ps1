@@ -23,7 +23,7 @@ $nameOfProgram = "DesktopInfo64"
 $exeInstallPath = "C:\Program Files (x86)\Win32Apps\DesktopInfo"
 $exeFile = "DesktopInfo64.exe"
 $legacyPathClean = $true
-[String[]]$oldInstallPaths = "C:\Win32Apps"
+[String[]]$oldInstallPaths = "C:\Win32Apps", "C:\Win32Apps"
 [String[]]$extraFiles = "DesktopInfo64W.exe", "desktopinfo.ini", "libeay32.dll",`
 						"ssleay32.dll", "GetCellularIP.ps1", "GetEthernetIP.ps1",`
 						"GetWifiIP.ps1"
@@ -121,6 +121,8 @@ if($requireRunOnEveryLogon){
 	$regDoesNotExist = "$checkIfRegExists" -ne "exists"
 	$altRegDoesNotExist = "$checkIfAltRegExists" -ne "exists"
 	$anotherAltRegDoesNotExist = "$checkIfAnotherAltRegExists" -ne "exists"
+	$regExists = "$checkIfRegExists" -eq "exists"
+	$anotherAltRegExists = "$checkIfAnotherAltRegExists" -eq "exists"
  
 
 	if ($debugout){
@@ -179,10 +181,13 @@ if($requireRunOnEveryLogon){
 		write-host "Checking Input has happened"
 		Get-ItemProperty -Path "$startupList"
 	}
+	if ($regExists -or $anotherAltRegExist) {
+		Set-ItemProperty -Path "$startupList" -Name "$nameOfProgram" -Value "$preJoinedValueData"
+	}
 	
 	#check alt locations - cause windows
 	if ($debugout){
-		write-host "Variable Checkpoint - Stage 2"
+		write-host "Variable Checkpoint - Stage Two"
 		write-host "preJoinedValueData: $preJoinedValueData"
 		write-host "checkIfRegExists: $checkIfRegExists"
 		write-host "checkIfAltRegExists: $checkIfAltRegExists"
@@ -199,7 +204,7 @@ if($requireRunOnEveryLogon){
 	
 }
 if ($debugout){
-		write-host "Variable Checkpoint - Stage 3"
+		write-host "Variable Checkpoint - Stage Three"
 		write-host "preJoinedValueData: $preJoinedValueData"
 		write-host "checkIfRegExists: $checkIfRegExists"
 		write-host "checkIfAltRegExists: $checkIfAltRegExists"
@@ -214,17 +219,21 @@ if ($debugout){
 		write-host "========================================="
 		write-host "  "
 	}
-	if (legacyPathClean) {
+	if ($legacyPathClean) {
 		foreach ($legacyPath in $oldInstallPaths) {
 			try {
 			Remove-Item -Path "$legacyPath" -Recurse -Force -Confirm:$false
 			}
 			catch {
-				write-host "$legacyPath Old Install Location previously cleaned or wasnt installed"
+				if($debugout){
+					write-host "$legacyPath Old Install Location previously cleaned or wasnt installed"
+				}
 			}
 		}
 	}
 #Create any Powershell scripts required for the program
 
 Stop-Transcript
-Return 0
+write-host "0"
+write-host "Ending Script in Success"
+Return 535543455353
