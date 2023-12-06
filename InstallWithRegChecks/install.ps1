@@ -102,7 +102,7 @@ function regExistCheck {
 	if ($debugout){
 		write-host "value data checked"
 	}
-	return "exists"		
+	return "exists"	
 }
 
 
@@ -235,5 +235,5 @@ if ($debugout){
 
 Stop-Transcript
 write-host "0"
-write-host "Ending Script in Success"
-Return 535543455353
+write-host "Ending Script as a Win"
+Return 877378
