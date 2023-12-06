@@ -9,9 +9,9 @@ Easy Setup - change variables and go
 #Can add to extraFiles list with , "[File Name/path]
 ############################################################
 #DEBUG switch
-$debugout = $false
+$debugout = $true
 $timeVar = Get-Date -Format HHmmssfff
-Start-Transcript -path "$env:TEMP\$timeVar diUnoutput.txt" -append
+Start-Transcript -path "C:\Win32Apps\$timeVar diUnoutput.txt" -append
 write-host "version dev3"
 #Enable require requireRunOnEveryLogon if it needs to be a startup item
 $requiredRunOnEveryLogon = $true
@@ -20,9 +20,13 @@ $altStartupList = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Star
 $anotherAltStartupList = "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Run"
 
 $nameOfProgram = "DesktopInfo64"
-$exeInstallPath = "C:\Program Files (x86)\Win32Apps"
-$exeInstallPath2 = "C:\Win32Apps"
+$exeInstallPath = "C:\Win32Apps\DesktopInfo"
+$exeInstallPath2 = "C:\Win32Apps\DesktopInfo"
 $exeFile = "DesktopInfo64.exe"
+
+$legacyPathClean = $true
+[String[]]$oldInstallPaths = "C:\Win32Apps", "C:\Win32Apps"
+
 [String[]]$extraFiles = "DesktopInfo64W.exe", "desktopinfo.ini", "libeay32.dll",`
 						"ssleay32.dll", "GetCellularIP.ps1", "GetEthernetIP.ps1",`
 						"GetWifiIP.ps1"
@@ -226,42 +230,15 @@ if($requiredRunOnEveryLogon){
 	}
 }
 #File and Folder removal.
-try {
 Remove-Item -Path "$exeInstallPath" -Recurse -Force -Confirm:$false 
-}
-catch {
-	write-host "Application Install didnt exist in updated path"
-}
-
-try {
 Remove-Item -Path "$exeInstallPath2" -Recurse -Force -Confirm:$false 
-}
-catch {
-	write-host "Application was manually removed or failed to install properly - no uninstall required"
-}
-
-try {
 Remove-Item $PSCommandPath -Recurse -Force -Confirm:$false 
-}
-catch {
-	write-host "failed to remove initial run path there is a backup clearing process that will run shortly"
-}
-
-try {
 powershell -File "$env:TEMP\uninstall.ps1" 
-}
-catch {
-	write-host "backup removal routine already cleared final run"
-}
+
 ##SPLIT - the other bit of the insurance policy
-try {
 Remove-Item -Path .\uninstall.ps1
-}
-catch {
-	write-host "already removed last trace off disk - only running in memory"
-}
-write-host "Successfully finished - Stopping Transcription of Process"
 Stop-Transcript
 write-host "0"
-Return 0
+write-host "Ending Script as a Win"
+Return 877378
 
